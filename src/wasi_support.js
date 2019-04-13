@@ -1,4 +1,9 @@
 
+var WASI_STDIN_FILENO  = 0;
+var WASI_STDOUT_FILENO = 1;
+var WASI_STDERR_FILENO = 2;
+
 var __WASI_PREOPENTYPE_DIR = 0;
+var __WASI_EBADF           = 8;
 
 

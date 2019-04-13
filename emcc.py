@@ -1810,6 +1810,7 @@ There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR P
         if shared.Settings.WASI:
           assert(len(linker_inputs) == 1)
           final = linker_inputs[0]
+          # TODO: need to set initial memory and other stuff that lld does
         elif shared.Settings.WASM_BACKEND:
           # If LTO is enabled then use the -O opt level as the LTO level
           if options.llvm_lto:
