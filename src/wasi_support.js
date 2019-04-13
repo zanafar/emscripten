@@ -1,0 +1,4 @@
+
+var __WASI_PREOPENTYPE_DIR = 0;
+
+

@@ -188,6 +188,8 @@ load('jsifier.js');
 globalEval(processMacros(preprocess(read('runtime.js'), 'runtime.js')));
 Runtime.QUANTUM_SIZE = QUANTUM_SIZE;
 
+if (WASI) load('wasi_support.js');
+
 // State computations
 
 var ENVIRONMENTS = ENVIRONMENT.split(',');
