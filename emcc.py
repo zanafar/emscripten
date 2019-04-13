@@ -867,7 +867,7 @@ There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR P
           exit_with_error('%s: No such file or directory ("%s" was expected to be an input file, based on the commandline arguments provided)', arg, arg)
 
         file_suffix = get_file_suffix(arg)
-        if file_suffix in SOURCE_ENDINGS + BITCODE_ENDINGS + DYNAMICLIB_ENDINGS + ASSEMBLY_ENDINGS + HEADER_ENDINGS or shared.Building.is_ar(arg): # we already removed -o <target>, so all these should be inputs
+        if file_suffix in SOURCE_ENDINGS + BITCODE_ENDINGS + DYNAMICLIB_ENDINGS + ASSEMBLY_ENDINGS + HEADER_ENDINGS or shared.Building.is_ar(arg) or shared.Building.is_wasm(arg): # we already removed -o <target>, so all these should be inputs
           newargs[i] = ''
           if file_suffix.endswith(SOURCE_ENDINGS):
             input_files.append((i, arg))
@@ -1306,6 +1306,10 @@ There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR P
       exit_with_error('WASM_MEM_MAX must be a multiple of 64KB, was ' + str(shared.Settings.WASM_MEM_MAX))
     if shared.Settings.USE_PTHREADS and shared.Settings.WASM and shared.Settings.ALLOW_MEMORY_GROWTH and shared.Settings.WASM_MEM_MAX == -1:
       exit_with_error('If pthreads and memory growth are enabled, WASM_MEM_MAX must be set')
+
+    if shared.Settings.WASI:
+      shared.Settings.ONLY_MY_CODE = 1
+      shared.Settings.EXPORTED_FUNCTIONS = ['_start']
 
     if shared.Settings.EXPORT_ES6 and not shared.Settings.MODULARIZE:
       exit_with_error('EXPORT_ES6 requires MODULARIZE to be set')
@@ -1803,7 +1807,10 @@ There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR P
         # if using the wasm backend, we might be using vanilla LLVM, which does not allow our fastcomp deferred linking opts.
         # TODO: we could check if this is a fastcomp build, and still speed things up here
         just_calculate = DEBUG != 2 and not shared.Settings.WASM_BACKEND
-        if shared.Settings.WASM_BACKEND:
+        if shared.Settings.WASI:
+          assert(len(linker_inputs) == 1)
+          final = linker_inputs[0]
+        elif shared.Settings.WASM_BACKEND:
           # If LTO is enabled then use the -O opt level as the LTO level
           if options.llvm_lto:
             lto_level = options.opt_level

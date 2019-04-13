@@ -2488,7 +2488,7 @@ def run(infile, outfile, memfile, libraries):
   temp_files = get_configuration().get_temp_files()
   infile, outfile = substitute_response_files([infile, outfile])
 
-  if not shared.Settings.BOOTSTRAPPING_STRUCT_INFO and not shared.Settings.ONLY_MY_CODE:
+  if not shared.Settings.BOOTSTRAPPING_STRUCT_INFO and not shared.Settings.ONLY_MY_CODE and not shared.Settings.WASI:
     generated_struct_info_name = 'generated_struct_info.json'
 
     def ensure_struct_info():

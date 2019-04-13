@@ -535,6 +535,7 @@ def generate_sanity():
 
 
 def perform_sanify_checks():
+  return
   logger.info('(Emscripten: Running sanity checks)')
 
   with ToolchainProfiler.profile_block('sanity compiler_engine'):

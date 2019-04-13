@@ -999,6 +999,10 @@ var WASM_BACKEND = 0;
 // of using LLVM IR.
 var WASM_OBJECT_FILES = 1;
 
+// Indicates the input is a wasi-API-using wasm file, and we should provide
+// appropriate system support for that.
+var WASI = 0;
+
 // An optional comma-separated list of script hooks to run after binaryen,
 // in binaryen's /scripts dir.
 var BINARYEN_SCRIPTS = "";

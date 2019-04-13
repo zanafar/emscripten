@@ -595,6 +595,7 @@ def calculate(temp_files, in_temp, stdout_, stderr_, forced=[]):
     symbolses.append(Dummy())
 
   # depend on exported functions
+  print('exports:', shared.Settings.EXPORTED_FUNCTIONS)
   for export in shared.Settings.EXPORTED_FUNCTIONS:
     if shared.Settings.VERBOSE:
       logger.debug('adding dependency on export %s' % export)

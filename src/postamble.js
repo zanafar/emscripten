@@ -190,13 +190,7 @@ Module['callMain'] = function callMain(args) {
     var start = Date.now();
 #endif
 
-#if PROXY_TO_PTHREAD
-    // User requested the PROXY_TO_PTHREAD option, so call a stub main which pthread_create()s a new thread
-    // that will call the user's real main() for the application.
-    var ret = Module['_proxy_main'](argc, argv, 0);
-#else
-    var ret = Module['_main'](argc, argv, 0);
-#endif
+    var ret = Module['{{{ MAIN_NAME }}}'](argc, argv, 0);
 
 #if BENCHMARK
     Module.realPrint('main() took ' + (Date.now() - start) + ' milliseconds');
@@ -275,10 +269,10 @@ function run(args) {
     if (Module['onRuntimeInitialized']) Module['onRuntimeInitialized']();
 
 #if HAS_MAIN
-    if (Module['_main'] && shouldRunNow) Module['callMain'](args);
+    if (shouldRunNow) Module['callMain'](args);
 #else
 #if ASSERTIONS
-    assert(!Module['_main'], 'compiled without a main, but one is present. if you added it from JS, use Module["onRuntimeInitialized"]');
+    assert(!Module['{{{ MAIN_NAME }}}'], 'compiled without a main, but one is present. if you added it from JS, use Module["onRuntimeInitialized"]');
 #endif // ASSERTIONS
 #endif // HAS_MAIN
 

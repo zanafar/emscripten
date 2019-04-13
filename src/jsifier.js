@@ -44,7 +44,14 @@ var NEED_ALL_ASM2WASM_IMPORTS = BINARYEN_TRAP_MODE == 'js';
 // also set when in a linkable module, as the main() function might
 // arrive from a dynamically-linked library, and not necessarily
 // the current compilation unit.
-var HAS_MAIN = ('_main' in IMPLEMENTED_FUNCTIONS) || MAIN_MODULE || SIDE_MODULE;
+var HAS_MAIN = ('_main' in IMPLEMENTED_FUNCTIONS) || MAIN_MODULE || SIDE_MODULE || WASI;
+
+var MAIN_NAME = '_main';
+if (PROXY_TO_PTHREAD) {
+  MAIN_NAME = '_proxy_main';
+} else if (WASI) {
+  MAIN_NAME = '__start';
+}
 
 // JSifier
 function JSify(data, functionsOnly) {
