@@ -2760,7 +2760,7 @@ Var: 42
       start = js.find('var NAMED_GLOBALS')
       first = js.find('{', start)
       last = js.find('}', start)
-      exports = js[first+1:last]
+      exports = js[first + 1:last]
       exports = exports.split(',')
       # ensure there aren't too many globals; we don't want unnamed_addr
       exports = [e.split(':')[0].strip('"') for e in exports]
