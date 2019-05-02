@@ -425,7 +425,7 @@ class RunnerCore(unittest.TestCase):
     js = open(filename).read()
     create_test_file(filename, js.replace('run();', 'run(%s + Module["arguments"]);' % str(args)))
 
-  def prep_ll_run(self, filename, ll_file, force_recompile=False, build_ll_hook=None):
+  def prep_ll_file(self, filename, input_file, force_recompile=False, build_ll_hook=None):
     # force_recompile = force_recompile or os.path.getsize(filename + '.o.ll') > 50000
     # If the file is big, recompile just to get ll_opts
     # Recompiling just for dfe in ll_opts is too costly
@@ -447,12 +447,12 @@ class RunnerCore(unittest.TestCase):
         f.write(contents)
 
     if force_recompile or build_ll_hook:
-      if ll_file.endswith(('.bc', '.o')):
+      if input_file.endswith(('.bc', '.o')):
         if ll_file != filename + '.o':
-          shutil.copy(ll_file, filename + '.o')
+          shutil.copy(input_file, filename + '.o')
         Building.llvm_dis(filename)
       else:
-        shutil.copy(ll_file, filename + '.o.ll')
+        shutil.copy(input_file, filename + '.o.ll')
         fix_target(filename + '.o.ll')
 
       if build_ll_hook:
@@ -468,12 +468,12 @@ class RunnerCore(unittest.TestCase):
 
       Building.llvm_as(filename)
     else:
-      if ll_file.endswith('.ll'):
-        safe_copy(ll_file, filename + '.o.ll')
+      if input_file.endswith('.ll'):
+        safe_copy(input_file, filename + '.o.ll')
         fix_target(filename + '.o.ll')
         Building.llvm_as(filename)
       else:
-        safe_copy(ll_file, filename + '.o')
+        safe_copy(input_file, filename + '.o')
 
   def get_emcc_args(self):
     # TODO(sbc): We should probably unify Building.COMPILER_TEST_OPTS and self.emcc_args
@@ -535,7 +535,7 @@ class RunnerCore(unittest.TestCase):
           self.fail("Linkage error")
 
       # Finalize
-      self.prep_ll_run(filename, object_file, build_ll_hook=build_ll_hook)
+      self.prep_ll_file(filename, object_file, build_ll_hook=build_ll_hook)
 
       # BC => JS
       Building.emcc(object_file, self.get_emcc_args(), object_file + '.js')

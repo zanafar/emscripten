@@ -600,6 +600,10 @@ class TestCoreBase(RunnerCore):
     Building.emcc(obj_file, self.get_emcc_args(), js_file)
     self.do_run(js_file, expected_output, no_build=True, **kwargs)
 
+  def do_run_ll(self, filename, expected_output=None, **kwargs):
+    self.prep_ll_file(filename, filename)
+    self.do_run_object(filename + '.o', expected_output, **kwargs)
+
   def test_multiply_defined_symbols(self):
     create_test_file('a1.c', 'int f() { return 1; }')
     create_test_file('a2.c', 'void x() {}')
@@ -5873,7 +5877,7 @@ return malloc(size);
       self.do_run_object(bitcode, pyoutput, args=['-S', '-c', pyscript])
 
   def test_lifetime(self):
-    self.do_run_object(path_from_root('tests', 'lifetime.ll'), 'hello, world!\n')
+    self.do_run_ll(path_from_root('tests', 'lifetime.ll'), 'hello, world!\n')
     if '-O1' in self.emcc_args or '-O2' in self.emcc_args:
       assert 'a18' not in open('src.cpp.o.js').read(), 'lifetime stuff and their vars must be culled'
 
@@ -5973,7 +5977,7 @@ return malloc(size);
           self.emcc_args += json.loads(open(shortname + '.emcc').read())
 
         with env_modify({'EMCC_LEAVE_INPUTS_RAW': leave_inputs}):
-          self.do_run_object(path_from_root('tests', 'cases', name), output)
+          self.do_run_ll(path_from_root('tests', 'cases', name), output)
 
       # Optional source checking, a python script that gets a global generated with the source
       src_checker = path_from_root('tests', 'cases', shortname + '.py')
@@ -6034,7 +6038,7 @@ return malloc(size);
       assert 'Success.' in output, output
       # rebuild .bc
       # TODO: use code in do_autodebug_post for this
-      self.prep_ll_run(filename, filename + '.o.ll.ll', force_recompile=True)
+      self.prep_ll_file(filename, filename + '.o.ll.ll', force_recompile=True)
 
     # Run a test that should work, generating some code
     test_path = path_from_root('tests', 'core', 'test_structs')
@@ -6047,7 +6051,7 @@ return malloc(size);
     do_autodebug(filename)
 
     # Compare to each other, and to expected output
-    self.do_run_object(filename + '.o.ll.ll', 'AD:-1,1')
+    self.do_run_ll(filename + '.o.ll.ll', 'AD:-1,1')
 
     # Test using build_ll_hook
     src = '''
