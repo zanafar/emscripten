@@ -600,7 +600,7 @@ class TestCoreBase(RunnerCore):
     Building.emcc(obj_file, self.get_emcc_args(), js_file)
     self.do_run(js_file, expected_output, no_build=True, **kwargs)
 
-  def do_run_ll(self, filename, expected_output=None, **kwargs):
+  def do_ll_run(self, filename, expected_output=None, **kwargs):
     self.prep_ll_file(filename, filename)
     self.do_run_object(filename + '.o', expected_output, **kwargs)
 
@@ -5877,9 +5877,9 @@ return malloc(size);
       self.do_run_object(bitcode, pyoutput, args=['-S', '-c', pyscript])
 
   def test_lifetime(self):
-    self.do_run_ll(path_from_root('tests', 'lifetime.ll'), 'hello, world!\n')
+    self.do_ll_run(path_from_root('tests', 'lifetime.ll'), 'hello, world!\n')
     if '-O1' in self.emcc_args or '-O2' in self.emcc_args:
-      assert 'a18' not in open('src.cpp.o.js').read(), 'lifetime stuff and their vars must be culled'
+      assert 'a18' not in open('lifetime.ll.o.js').read(), 'lifetime stuff and their vars must be culled'
 
   # Test cases in separate files. Note that these files may contain invalid .ll!
   # They are only valid enough for us to read for test purposes, not for llvm-as
@@ -5977,7 +5977,7 @@ return malloc(size);
           self.emcc_args += json.loads(open(shortname + '.emcc').read())
 
         with env_modify({'EMCC_LEAVE_INPUTS_RAW': leave_inputs}):
-          self.do_run_ll(path_from_root('tests', 'cases', name), output)
+          self.do_ll_run(path_from_root('tests', 'cases', name), output)
 
       # Optional source checking, a python script that gets a global generated with the source
       src_checker = path_from_root('tests', 'cases', shortname + '.py')
@@ -6051,7 +6051,7 @@ return malloc(size);
     do_autodebug(filename)
 
     # Compare to each other, and to expected output
-    self.do_run_ll(filename + '.o.ll.ll', 'AD:-1,1')
+    self.do_ll_run(filename + '.o.ll.ll', 'AD:-1,1')
 
     # Test using build_ll_hook
     src = '''
