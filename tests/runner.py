@@ -448,7 +448,7 @@ class RunnerCore(unittest.TestCase):
 
     if force_recompile or build_ll_hook:
       if input_file.endswith(('.bc', '.o')):
-        if ll_file != filename + '.o':
+        if input_file != filename + '.o':
           shutil.copy(input_file, filename + '.o')
         Building.llvm_dis(filename)
       else:
